@@ -7,6 +7,8 @@ type Token struct {
 	Offset    int    // 位置
 }
 
+// 解析器函数
+// 成功返回 Token 列表，如果返回 nil 表示解析失败
 type ParserFunc = func(s *Scanner) []Token
 
 // 是否为字母
