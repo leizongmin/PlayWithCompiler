@@ -10,11 +10,6 @@ func IsDigit(c rune) bool {
 	return c >= '0' && c <= '9'
 }
 
-// 是否为标点符号
-func IsPunctuation(c rune) bool {
-	return c == '+' || c == '-' || c == '*' || c == '/' || c == '=' || c == '_' || c == '.'
-}
-
 // 是否为空白字符
 func IsWhite(c rune) bool {
 	return c == ' ' || c == '\n' || c == '\r' || c == '\t'

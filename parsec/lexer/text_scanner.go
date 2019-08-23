@@ -1,5 +1,9 @@
 package lexer
 
+import (
+	"strings"
+)
+
 type TextScanner struct {
 	input  []rune
 	offset int
@@ -97,4 +101,40 @@ func (s *TextScanner) StackPop(reset bool) {
 		s.char = s.input[p.Offset]
 	}
 	// log.Printf("%d '%s' StackPop(%v): %+v\n", s.offset, string(s.char), reset, p)
+}
+
+// 获得指定位置所在行的内容
+func (s *TextScanner) GetLine(offset int) (line string, start int, end int) {
+	start = runeArrayLastIndexOf(s.input, '\n', offset)
+	end = runeArrayIndexOf(s.input, '\n', offset)
+	if start == -1 {
+		start = 0
+	}
+	if end == -1 {
+		end = len(s.input)
+	}
+	return strings.Trim(string(s.input[start:end]), "\r\n"), start, end
+}
+
+func runeArrayIndexOf(arr []rune, a rune, start int) int {
+	i := start
+	end := len(arr)
+	for i < end {
+		if arr[i] == a {
+			return i
+		}
+		i++
+	}
+	return -1
+}
+
+func runeArrayLastIndexOf(arr []rune, a rune, start int) int {
+	i := start
+	for i >= 0 {
+		if arr[i] == a {
+			return i
+		}
+		i--
+	}
+	return -1
 }

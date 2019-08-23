@@ -98,6 +98,58 @@ var ParseFloatLiteral = ToParser("ParseFloatLiteral", func(s *TextScanner) []Tok
 // 解析数值字面量
 var ParseNumberLiteral = OneOf(ParseFloatLiteral, ParseIntLiteral)
 
+// 解析字符串字面量
+var ParseStringLiteral = ToParser("ParseStringLiteral", func(s *TextScanner) []Token {
+	chars := make([]rune, 0)
+	offset := s.Offset()
+	c := s.Current()
+	if c != '"' {
+		return nil
+	}
+	chars = append(chars, c)
+	lc := c
+	for {
+		c := s.Next()
+		if c == '"' && lc != '\\' {
+			chars = append(chars, c)
+			s.Next()
+			break
+		} else {
+			chars = append(chars, c)
+			lc = c
+		}
+	}
+	return []Token{{TokenType: "StringLiteral", TokenText: string(chars), Offset: offset}}
+})
+
+// 解析字符字面量
+var ParseCharLiteral = ToParser("ParseCharLiteral", func(s *TextScanner) []Token {
+	chars := make([]rune, 0)
+	offset := s.Offset()
+	c := s.Current()
+	if c != '\'' {
+		return nil
+	}
+	chars = append(chars, c)
+	c2 := s.Next()
+	if c2 == '\\' {
+		c3 := s.Next()
+		c4 := s.Next()
+		if c4 != '\'' {
+			return nil
+		}
+		chars = append(chars, c2, c3, c4)
+	} else {
+		c3 := s.Next()
+		if c3 != '\'' {
+			return nil
+		}
+		chars = append(chars, c2, c3)
+	}
+	s.Next()
+	return []Token{{TokenType: "CharLiteral", TokenText: string(chars), Offset: offset}}
+})
+
 // 生成解析固定连续字符
 func GenParseToken(tokenType string, text string) Parser {
 	chars := []rune(text)
