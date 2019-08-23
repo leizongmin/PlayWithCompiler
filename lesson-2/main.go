@@ -24,5 +24,5 @@ func Parse(source string) ([]lexer.Token, error) {
 		lexer.GenParseToken("EQ", "="),
 		lexer.ParseNumberLiteral,
 	)
-	return lexer.RunParser(assignStatement, source)
+	return lexer.RunParser(assignStatement, lexer.NewTextScanner(source))
 }
