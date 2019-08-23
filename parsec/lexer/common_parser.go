@@ -84,13 +84,20 @@ var ParseFloatLiteral = ToParser("ParseFloatLiteral", func(s *TextScanner) []Tok
 		return nil
 	}
 	chars = append(chars, c)
+	hasPoint := false
 	for {
 		c := s.Next()
 		if IsDigit(c) || c == '.' || c == '_' || c == 'e' || c == 'E' {
 			chars = append(chars, c)
+			if c == '.' {
+				hasPoint = true
+			}
 		} else {
 			break
 		}
+	}
+	if !hasPoint {
+		return nil
 	}
 	return []Token{{TokenType: "FloatLiteral", TokenText: string(chars), Offset: offset}}
 })
