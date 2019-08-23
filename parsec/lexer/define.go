@@ -7,11 +7,11 @@ type Parser struct {
 	Func ParserFunc
 }
 
-func ToParser(name string, parser ParserFunc) Parser {
-	return Parser{Name: name, Func: parser}
+func ToParser(name string, parser ParserFunc) *Parser {
+	return &Parser{Name: name, Func: parser}
 }
 
-func (p Parser) Call(s *TextScanner) []Token {
+func (p *Parser) Call(s *TextScanner) []Token {
 	debugf("Call %s", p.Name)
 	ret := p.Func(s)
 	if ret == nil {
@@ -20,6 +20,11 @@ func (p Parser) Call(s *TextScanner) []Token {
 		debugf("\t OK: %+v", ret)
 	}
 	return ret
+}
+
+func (p *Parser) SetName(name string) *Parser {
+	p.Name = name
+	return p
 }
 
 type Token struct {

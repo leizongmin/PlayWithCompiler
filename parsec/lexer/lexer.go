@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func RunParser(parser Parser, scanner *TextScanner) ([]Token, error) {
+func RunParser(parser *Parser, scanner *TextScanner) ([]Token, error) {
 	tokenList := parser.Call(scanner)
 	if tokenList == nil {
 		pos := scanner.Position()

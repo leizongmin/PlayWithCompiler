@@ -4,17 +4,21 @@ import (
 	"strings"
 )
 
-func getParserNames(parsers []Parser) string {
+func getParserNames(parsers []*Parser) string {
 	names := make([]string, 0)
 	for _, p := range parsers {
 		names = append(names, p.Name)
 	}
-	return strings.Join(names, ",")
+	return strings.Join(names, ", ")
+}
+
+func wrapParserName(parent string, name string) string {
+	return parent + "( " + name + " )"
 }
 
 // 尝试顺序执行解析器
-func Sequence(parsers ...Parser) Parser {
-	return ToParser("Sequence("+getParserNames(parsers)+")", func(s *TextScanner) []Token {
+func Sequence(parsers ...*Parser) *Parser {
+	return ToParser(wrapParserName("Sequence", getParserNames(parsers)), func(s *TextScanner) []Token {
 		result := make([]Token, 0)
 		for _, parser := range parsers {
 			tokenList := parser.Call(s)
@@ -28,8 +32,8 @@ func Sequence(parsers ...Parser) Parser {
 }
 
 // 尝试顺序执行解析器，每个解析器中间加入可选的空白字符解析
-func SequenceWithOptionalWhitespace(parsers ...Parser) Parser {
-	newParsers := make([]Parser, 0)
+func SequenceWithOptionalWhitespace(parsers ...*Parser) *Parser {
+	newParsers := make([]*Parser, 0)
 	for _, parser := range parsers {
 		newParsers = append(newParsers, parser, DiscardResult(Optional(ParseWhite)))
 	}
@@ -38,8 +42,8 @@ func SequenceWithOptionalWhitespace(parsers ...Parser) Parser {
 }
 
 // 尝试执行任意一个解析器，如果成功则返回
-func OneOf(parsers ...Parser) Parser {
-	return ToParser("OneOf("+getParserNames(parsers)+")", func(s *TextScanner) []Token {
+func OneOf(parsers ...*Parser) *Parser {
+	return ToParser(wrapParserName("OneOf", getParserNames(parsers)), func(s *TextScanner) []Token {
 		for _, parser := range parsers {
 			s.StackPush()
 			tokenList := parser.Call(s)
@@ -54,8 +58,8 @@ func OneOf(parsers ...Parser) Parser {
 }
 
 // 尝试可选的解析器
-func Optional(parser Parser) Parser {
-	return ToParser("Optional("+parser.Name+")", func(s *TextScanner) []Token {
+func Optional(parser *Parser) *Parser {
+	return ToParser(wrapParserName("Optional", parser.Name), func(s *TextScanner) []Token {
 		s.StackPush()
 		tokenList := parser.Call(s)
 		if tokenList != nil {
@@ -68,8 +72,8 @@ func Optional(parser Parser) Parser {
 	})
 }
 
-func Many(parser Parser) Parser {
-	return ToParser("Many("+parser.Name+")", func(s *TextScanner) []Token {
+func Many(parser *Parser) *Parser {
+	return ToParser(wrapParserName("Many", parser.Name), func(s *TextScanner) []Token {
 		tokenList := parser.Call(s)
 		if tokenList == nil {
 			return nil
@@ -90,18 +94,18 @@ func Many(parser Parser) Parser {
 }
 
 // 重复一个或多个的解析器
-func OneOrMore(parser Parser) Parser {
+func OneOrMore(parser *Parser) *Parser {
 	return Sequence(parser, Optional(Many(parser)))
 }
 
 // 重复零个或多个的解析器
-func ZeroOrMore(parser Parser) Parser {
+func ZeroOrMore(parser *Parser) *Parser {
 	return Optional(Many(parser))
 }
 
 // 丢弃解析到的结果
-func DiscardResult(parser Parser) Parser {
-	return ToParser("DiscardResult("+parser.Name+")", func(s *TextScanner) []Token {
+func DiscardResult(parser *Parser) *Parser {
+	return ToParser(wrapParserName("DiscardResult", parser.Name), func(s *TextScanner) []Token {
 		tokenList := parser.Call(s)
 		if tokenList == nil {
 			return nil

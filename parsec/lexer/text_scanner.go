@@ -94,13 +94,17 @@ func (s *TextScanner) StackPop(reset bool) {
 	}
 	p := s.stack[i]
 	s.stack = s.stack[0 : len(s.stack)-1]
+	// debugf("%d '%s' StackPop(%v): %+v %d\n", s.offset, string(s.char), reset, p, len(s.input))
 	if reset {
 		s.offset = p.Offset
 		s.line = p.Line
 		s.column = p.Column
-		s.char = s.input[p.Offset]
+		if p.Offset >= len(s.input) {
+			s.char = 0
+		} else {
+			s.char = s.input[p.Offset]
+		}
 	}
-	// log.Printf("%d '%s' StackPop(%v): %+v\n", s.offset, string(s.char), reset, p)
 }
 
 // 获得指定位置所在行的内容

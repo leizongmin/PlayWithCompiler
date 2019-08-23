@@ -41,7 +41,7 @@ var ParseID = ToParser("ParseID", func(s *TextScanner) []Token {
 })
 
 // 解析关键词
-func GenParseKeyword(keywords []string) Parser {
+func GenParseKeyword(keywords []string) *Parser {
 	return ToParser("ParseKeyword", func(s *TextScanner) []Token {
 		tokenList := ParseID.Call(s)
 		if len(tokenList) != 1 {
@@ -151,7 +151,7 @@ var ParseCharLiteral = ToParser("ParseCharLiteral", func(s *TextScanner) []Token
 })
 
 // 生成解析固定连续字符
-func GenParseToken(tokenType string, text string) Parser {
+func GenParseToken(tokenType string, text string) *Parser {
 	chars := []rune(text)
 	size := len(chars)
 	if size < 1 {
