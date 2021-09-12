@@ -3,7 +3,7 @@ package lexer
 // 解析空白字符
 var ParseWhite = ToParser("ParseWhite", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if !IsWhite(c) {
 		return nil
@@ -17,13 +17,13 @@ var ParseWhite = ToParser("ParseWhite", func(s *TextScanner) []Token {
 			break
 		}
 	}
-	return []Token{{TokenType: "White", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "White", TokenText: string(chars), Position: position}}
 })
 
 // 解析标志符
 var ParseID = ToParser("ParseID", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if !IsAlpha(c) {
 		return nil
@@ -37,7 +37,7 @@ var ParseID = ToParser("ParseID", func(s *TextScanner) []Token {
 			break
 		}
 	}
-	return []Token{{TokenType: "ID", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "ID", TokenText: string(chars), Position: position}}
 })
 
 // 解析关键词
@@ -58,7 +58,7 @@ func GenParseKeyword(keywords []string) *Parser {
 // 解析整数字面量
 var ParseIntLiteral = ToParser("ParseIntLiteral", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if !IsDigit(c) {
 		return nil
@@ -72,13 +72,13 @@ var ParseIntLiteral = ToParser("ParseIntLiteral", func(s *TextScanner) []Token {
 			break
 		}
 	}
-	return []Token{{TokenType: "IntLiteral", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "IntLiteral", TokenText: string(chars), Position: position}}
 })
 
 // 解析浮点数字面量
 var ParseFloatLiteral = ToParser("ParseFloatLiteral", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if !IsDigit(c) {
 		return nil
@@ -99,7 +99,7 @@ var ParseFloatLiteral = ToParser("ParseFloatLiteral", func(s *TextScanner) []Tok
 	if !hasPoint {
 		return nil
 	}
-	return []Token{{TokenType: "FloatLiteral", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "FloatLiteral", TokenText: string(chars), Position: position}}
 })
 
 // 解析数值字面量
@@ -108,7 +108,7 @@ var ParseNumberLiteral = OneOf(ParseFloatLiteral, ParseIntLiteral)
 // 解析字符串字面量
 var ParseStringLiteral = ToParser("ParseStringLiteral", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if c != '"' {
 		return nil
@@ -126,13 +126,13 @@ var ParseStringLiteral = ToParser("ParseStringLiteral", func(s *TextScanner) []T
 			lc = c
 		}
 	}
-	return []Token{{TokenType: "StringLiteral", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "StringLiteral", TokenText: string(chars), Position: position}}
 })
 
 // 解析字符字面量
 var ParseCharLiteral = ToParser("ParseCharLiteral", func(s *TextScanner) []Token {
 	chars := make([]rune, 0)
-	offset := s.Offset()
+	position := s.Position()
 	c := s.Current()
 	if c != '\'' {
 		return nil
@@ -154,7 +154,7 @@ var ParseCharLiteral = ToParser("ParseCharLiteral", func(s *TextScanner) []Token
 		chars = append(chars, c2, c3)
 	}
 	s.Next()
-	return []Token{{TokenType: "CharLiteral", TokenText: string(chars), Offset: offset}}
+	return []Token{{TokenType: "CharLiteral", TokenText: string(chars), Position: position}}
 })
 
 // 生成解析固定连续字符
@@ -165,7 +165,7 @@ func GenParseToken(tokenType string, text string) *Parser {
 		panic("GenParseToken failed: text is empty")
 	}
 	return ToParser("ParseToken'"+text+"'", func(s *TextScanner) []Token {
-		offset := s.Offset()
+		position := s.Position()
 		c := s.Current()
 		if c != chars[0] {
 			return nil
@@ -179,6 +179,6 @@ func GenParseToken(tokenType string, text string) *Parser {
 			i++
 		}
 		s.Next()
-		return []Token{{TokenType: tokenType, TokenText: text, Offset: offset}}
+		return []Token{{TokenType: tokenType, TokenText: text, Position: position}}
 	})
 }

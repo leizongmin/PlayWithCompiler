@@ -7,10 +7,12 @@ import (
 )
 
 func main() {
-	tokenList, err := Parse("int x = 999; x + 123 + 456 * 789")
+	line := "int x = 999;\nresult = x + 123 + 456 * 789;"
+	tokenList, err := Parse(line)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(line)
 	for _, t := range tokenList {
 		fmt.Printf("\t%+v\n", t)
 	}

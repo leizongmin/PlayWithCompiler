@@ -28,7 +28,7 @@ func (p *Parser) SetName(name string) *Parser {
 }
 
 type Token struct {
-	TokenType string // 符号类型
-	TokenText string // 符号文本
-	Offset    int    // 位置
+	TokenType string         // 符号类型
+	TokenText string         // 符号文本
+	Position  SourcePosition // 开始位置
 }
