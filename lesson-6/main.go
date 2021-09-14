@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/leizongmin/PlayWithCompiler/lesson-6/calc_parser"
+	parser "lesson_6/calc_parser"
 )
+
+type calcListener struct {
+	*parser.BaseCalcListener
+}
 
 func main() {
 	// Setup the input
@@ -28,4 +32,5 @@ func main() {
 	fmt.Printf("%+v\n", prog)
 	fmt.Println(prog.GetText())
 	fmt.Printf("%+v\n", prog.GetPayload())
+	antlr.ParseTreeWalkerDefault.Walk(&calcListener{}, prog)
 }
